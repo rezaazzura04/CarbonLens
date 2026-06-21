@@ -73,11 +73,41 @@ def _save_users(users: dict):
 
 
 def is_authenticated() -> bool:
-    return bool(st.session_state.get("cl_auth_user"))
+    if st.session_state.get("cl_auth_user"):
+        return True
+    # Session memory was cleared (e.g. mobile tab backgrounded / websocket
+    # reconnect) — try to silently restore from the URL token so the user
+    # isn't bounced back to the login screen on every reconnect.
+    return _try_restore_session_from_query()
 
 
 def current_user() -> dict | None:
+    if not st.session_state.get("cl_auth_user"):
+        _try_restore_session_from_query()
     return st.session_state.get("cl_auth_user")
+
+
+def _try_restore_session_from_query() -> bool:
+    """Restore login from a ?session=username:token URL param, set right
+    after a successful login. Tokens are first 16 chars of the user's
+    password hash — enough to validate without re-exposing the full hash."""
+    try:
+        token = st.query_params.get("session", "")
+    except Exception:
+        return False
+    if not token or ":" not in token:
+        return False
+    username, short_token = token.split(":", 1)
+    users = _load_users()
+    if username not in users:
+        return False
+    expected = users[username]["password"][:16]
+    if short_token != expected:
+        return False
+    user_data = dict(users[username])
+    user_data["username"] = username
+    st.session_state["cl_auth_user"] = user_data
+    return True
 
 
 def current_role() -> str:
@@ -123,6 +153,12 @@ def login_page():
                 user_data = dict(users[username])
                 user_data["username"] = username
                 st.session_state["cl_auth_user"] = user_data
+                # Persist a short, non-sensitive session token in the URL so
+                # mobile browsers (which frequently drop the websocket on
+                # backgrounding) can silently restore login without forcing
+                # the user to re-enter credentials from scratch.
+                short_token = users[username]["password"][:16]
+                st.query_params["session"] = f"{username}:{short_token}"
                 _audit_log("login", username, "User logged in")
                 st.success(f"Welcome, {user_data['name']}!")
                 st.rerun()
@@ -146,6 +182,11 @@ def logout():
     if user:
         _audit_log("logout", user.get("username","?"), "User logged out")
     st.session_state.pop("cl_auth_user", None)
+    try:
+        if "session" in st.query_params:
+            del st.query_params["session"]
+    except Exception:
+        pass
     st.rerun()
 
 

@@ -559,27 +559,37 @@ def render():
     ]
 
     # Feature cards — responsive CSS grid (wraps to 1 col on mobile, 2 on tablet, 3 on desktop)
-    cards_html = ""
+    # Built via list + join (not nested f-strings) to avoid brace-escaping bugs
+    # that previously caused raw HTML to leak onto the page.
+    card_parts = []
     for feat in features:
-        tags_html = "".join([
-            f'<span style="background:#F3F4F6;color:#374151;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:600;margin-right:4px;">{t}</span>'
+        tags_html = "".join(
+            '<span style="background:#F3F4F6;color:#374151;border-radius:20px;'
+            'padding:3px 9px;font-size:10px;font-weight:600;margin-right:4px;">'
+            + t + '</span>'
             for t in feat["tags"]
-        ])
-        cards_html += f"""
-        <div style="background:white;border:1px solid #E2E8F0;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-            <div style="width:44px;height:44px;background:{feat['bg']};border-radius:12px;
-                display:flex;align-items:center;justify-content:center;font-size:22px;
-                margin-bottom:14px;">{feat['icon']}</div>
-            <div style="font-size:15px;font-weight:800;color:#1F2937;margin-bottom:8px;">{feat['title']}</div>
-            <div style="font-size:12px;color:#6B7280;line-height:1.7;margin-bottom:14px;">{feat['desc']}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">{tags_html}</div>
-        </div>"""
+        )
+        card = (
+            '<div style="background:white;border:1px solid #E2E8F0;border-radius:12px;'
+            'padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">'
+            '<div style="width:44px;height:44px;background:' + feat["bg"] + ';border-radius:12px;'
+            'display:flex;align-items:center;justify-content:center;font-size:22px;'
+            'margin-bottom:14px;">' + feat["icon"] + '</div>'
+            '<div style="font-size:15px;font-weight:800;color:#1F2937;margin-bottom:8px;">'
+            + feat["title"] + '</div>'
+            '<div style="font-size:12px;color:#6B7280;line-height:1.7;margin-bottom:14px;">'
+            + feat["desc"] + '</div>'
+            '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + tags_html + '</div>'
+            '</div>'
+        )
+        card_parts.append(card)
 
-    st.markdown(f"""
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:8px;">
-        {cards_html}
-    </div>
-    """, unsafe_allow_html=True)
+    cards_html = "".join(card_parts)
+    grid_html = (
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));'
+        'gap:16px;margin-bottom:8px;">' + cards_html + '</div>'
+    )
+    st.markdown(grid_html, unsafe_allow_html=True)
 
     st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 
@@ -603,23 +613,29 @@ def render():
     ]
 
     # Steps juga pakai CSS grid — wraps ke 2-3 col di mobile, 5 di desktop
-    steps_html = ""
+    # Built via list + join (not nested f-strings) to avoid HTML-leak bugs.
+    step_parts = []
     for step in steps:
-        steps_html += f"""
-        <div style="text-align:center;padding:16px 12px;background:white;border:1px solid #E2E8F0;border-radius:12px;">
-            <div style="font-size:28px;margin-bottom:10px;">{step['icon']}</div>
-            <div style="display:inline-block;background:#06B6D4;color:white;font-size:10px;
-                font-weight:800;letter-spacing:0.5px;padding:3px 10px;border-radius:20px;
-                margin-bottom:10px;">STEP {step['num']}</div>
-            <div style="font-size:14px;font-weight:700;color:#1F2937;margin-bottom:6px;line-height:1.3;">{step['title']}</div>
-            <div style="font-size:11px;color:#6B7280;line-height:1.6;">{step['desc']}</div>
-        </div>"""
+        step_card = (
+            '<div style="text-align:center;padding:16px 12px;background:white;'
+            'border:1px solid #E2E8F0;border-radius:12px;">'
+            '<div style="font-size:28px;margin-bottom:10px;">' + step["icon"] + '</div>'
+            '<div style="display:inline-block;background:#06B6D4;color:white;font-size:10px;'
+            'font-weight:800;letter-spacing:0.5px;padding:3px 10px;border-radius:20px;'
+            'margin-bottom:10px;">STEP ' + step["num"] + '</div>'
+            '<div style="font-size:14px;font-weight:700;color:#1F2937;margin-bottom:6px;line-height:1.3;">'
+            + step["title"] + '</div>'
+            '<div style="font-size:11px;color:#6B7280;line-height:1.6;">' + step["desc"] + '</div>'
+            '</div>'
+        )
+        step_parts.append(step_card)
 
-    st.markdown(f"""
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
-        {steps_html}
-    </div>
-    """, unsafe_allow_html=True)
+    steps_html = "".join(step_parts)
+    steps_grid_html = (
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">'
+        + steps_html + '</div>'
+    )
+    st.markdown(steps_grid_html, unsafe_allow_html=True)
 
     st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
 

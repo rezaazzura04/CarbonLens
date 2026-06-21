@@ -136,6 +136,25 @@ def render():
         ],
     )
 
+    # ── Plain-language explainer — what to actually look at first ──────────
+    grade_meaning = {
+        "A": "excellent — your sustainability performance is strong across the board.",
+        "B": "good — solid performance with room to improve in specific areas.",
+        "C": "fair — there are clear gaps worth addressing soon.",
+        "D": "needs attention — several areas require immediate action.",
+    }
+    grade_text = grade_meaning.get(esg["grade"], "calculated from your uploaded data.")
+    st.markdown(
+        '<div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;'
+        'padding:12px 16px;margin-bottom:18px;font-size:12px;color:#0C4A6E;line-height:1.6;">'
+        '👉 <strong>Start here:</strong> Your ESG Rating is <strong>' + esg["grade"] + '</strong> — '
+        'that\'s ' + grade_text + ' This single letter summarizes Environmental, Social, and '
+        'Governance performance combined. Scroll down for the breakdown, or open '
+        '<strong>ESG Analytics</strong> in the sidebar for the full picture.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
 
     # ── Year-over-Year comparison ──────────────────────────────────────────
     prev_df   = S.get("prev_year_df")

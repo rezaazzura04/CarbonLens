@@ -612,57 +612,62 @@ def render():
                 accent="#6366F1")
 
     with st.expander("📋 Social & Governance Data Inputs (GRI/SASB)", expanded=False):
-        sg_col1, sg_col2, sg_col3 = st.columns(3, gap="medium")
+        st.caption("Geser semua slider lalu klik **Save** sekali di bawah — perubahan tidak ter-apply per-geser, jadi halaman tidak reload tiap interaksi.")
+        with st.form("sg_inputs_form", clear_on_submit=False):
+            sg_col1, sg_col2, sg_col3 = st.columns(3, gap="medium")
 
-        with sg_col1:
-            st.markdown('<div style="font-size:12px;font-weight:700;color:#10B981;margin-bottom:8px;">🌿 Environmental (tambahan)</div>', unsafe_allow_html=True)
-            water_recycled = st.slider("Water Recycled (%)", 0, 100,
-                value=int(S.get("water_recycled_pct", 0) or 0), key="esg_water_recycled")
+            with sg_col1:
+                st.markdown('<div style="font-size:12px;font-weight:700;color:#10B981;margin-bottom:8px;">🌿 Environmental (tambahan)</div>', unsafe_allow_html=True)
+                water_recycled = st.slider("Water Recycled (%)", 0, 100,
+                    value=int(S.get("water_recycled_pct", 0) or 0), key="esg_water_recycled")
+                renew = st.slider("Renewable Energy (%)", 0, 100,
+                    value=int(S.get("renew_pct", 0) or 0), key="esg_renew")
+
+            with sg_col2:
+                st.markdown('<div style="font-size:12px;font-weight:700;color:#EC4899;margin-bottom:8px;">👥 Social — GRI 401/403/404/405</div>', unsafe_allow_html=True)
+                employees = st.number_input("Total Employees", min_value=0, step=1,
+                    value=int(S.get("employees", 0) or 0), key="esg_employees")
+                turnover = st.number_input("Turnover Rate (%/yr)", min_value=0.0, max_value=100.0,
+                    value=float(S.get("employee_turnover_pct") or 15.0), step=1.0, key="esg_turnover")
+                training = st.number_input("Training Hours/Employee/Year", min_value=0.0, max_value=200.0,
+                    value=float(S.get("training_hours_per_employee") or 8.0), step=1.0, key="esg_training")
+                women_wf = st.slider("Women in Workforce (%)", 0, 100,
+                    value=int(S.get("women_workforce_pct") or 30), key="esg_women_wf")
+                injury = st.number_input("Injury Rate (per 200k hrs)", min_value=0.0, max_value=20.0,
+                    value=float(S.get("injury_rate") or 3.0), step=0.1, key="esg_injury")
+
+            with sg_col3:
+                st.markdown('<div style="font-size:12px;font-weight:700;color:#6366F1;margin-bottom:8px;">⚖️ Governance — GRI 2-9/2-22/205</div>', unsafe_allow_html=True)
+                board_size = st.number_input("Board Size", min_value=0, step=1,
+                    value=int(S.get("board_size", 0) or 0), key="esg_board_size")
+                board_indep = st.slider("Board Independence (%)", 0, 100,
+                    value=int(S.get("board_independence_pct") or 30), key="esg_board_indep")
+                women_board = st.slider("Women on Board (%)", 0, 100,
+                    value=int(S.get("women_board_pct") or 15), key="esg_women_board")
+                anti_corr = st.slider("Anti-Corruption Training (%)", 0, 100,
+                    value=int(S.get("anti_corruption_training_pct") or 0), key="esg_anti_corr")
+                has_coc = st.checkbox("Code of Conduct — GRI 2-23",
+                    value=bool(S.get("has_code_of_conduct") or False), key="esg_coc")
+                has_wb = st.checkbox("Whistleblower Policy — GRI 2-26",
+                    value=bool(S.get("has_whistleblower_policy") or False), key="esg_wb")
+
+            submitted_sg = st.form_submit_button("💾 Save & Recalculate ESG Score", type="primary",
+                                                  use_container_width=True)
+
+        if submitted_sg:
             S.set("water_recycled_pct", float(water_recycled))
-            renew = st.slider("Renewable Energy (%)", 0, 100,
-                value=int(S.get("renew_pct", 0) or 0), key="esg_renew")
             S.set("renew_pct", float(renew))
-
-        with sg_col2:
-            st.markdown('<div style="font-size:12px;font-weight:700;color:#EC4899;margin-bottom:8px;">👥 Social — GRI 401/403/404/405</div>', unsafe_allow_html=True)
-            employees = st.number_input("Total Employees", min_value=0, step=1,
-                value=int(S.get("employees", 0) or 0), key="esg_employees")
             S.set("employees", int(employees))
-            turnover = st.number_input("Turnover Rate (%/yr)", min_value=0.0, max_value=100.0,
-                value=float(S.get("employee_turnover_pct") or 15.0), step=1.0, key="esg_turnover")
             S.set("employee_turnover_pct", float(turnover))
-            training = st.number_input("Training Hours/Employee/Year", min_value=0.0, max_value=200.0,
-                value=float(S.get("training_hours_per_employee") or 8.0), step=1.0, key="esg_training")
             S.set("training_hours_per_employee", float(training))
-            women_wf = st.slider("Women in Workforce (%)", 0, 100,
-                value=int(S.get("women_workforce_pct") or 30), key="esg_women_wf")
             S.set("women_workforce_pct", float(women_wf))
-            injury = st.number_input("Injury Rate (per 200k hrs)", min_value=0.0, max_value=20.0,
-                value=float(S.get("injury_rate") or 3.0), step=0.1, key="esg_injury")
             S.set("injury_rate", float(injury))
-
-        with sg_col3:
-            st.markdown('<div style="font-size:12px;font-weight:700;color:#6366F1;margin-bottom:8px;">⚖️ Governance — GRI 2-9/2-22/205</div>', unsafe_allow_html=True)
-            board_size = st.number_input("Board Size", min_value=0, step=1,
-                value=int(S.get("board_size", 0) or 0), key="esg_board_size")
             S.set("board_size", int(board_size))
-            board_indep = st.slider("Board Independence (%)", 0, 100,
-                value=int(S.get("board_independence_pct") or 30), key="esg_board_indep")
             S.set("board_independence_pct", float(board_indep))
-            women_board = st.slider("Women on Board (%)", 0, 100,
-                value=int(S.get("women_board_pct") or 15), key="esg_women_board")
             S.set("women_board_pct", float(women_board))
-            anti_corr = st.slider("Anti-Corruption Training (%)", 0, 100,
-                value=int(S.get("anti_corruption_training_pct") or 0), key="esg_anti_corr")
             S.set("anti_corruption_training_pct", float(anti_corr))
-            has_coc = st.checkbox("Code of Conduct — GRI 2-23",
-                value=bool(S.get("has_code_of_conduct") or False), key="esg_coc")
             S.set("has_code_of_conduct", bool(has_coc))
-            has_wb = st.checkbox("Whistleblower Policy — GRI 2-26",
-                value=bool(S.get("has_whistleblower_policy") or False), key="esg_wb")
             S.set("has_whistleblower_policy", bool(has_wb))
-
-        if st.button("💾 Save & Recalculate ESG Score", type="primary", key="esg_save_sg"):
             from utils.state import compute_canonical_esg
             compute_canonical_esg(force=True)
             esg = _esg_score_from_df(df, sector=S.get("sector","Manufacturing"))
@@ -848,9 +853,9 @@ def render():
 
     # ── YoY (if prev year loaded) ──────────────────────────────────────────
     prev_records = S.get("prev_year_df")
-    if prev_records:
+    if prev_records is not None:
         import numpy as _np
-        prev_df = pd.DataFrame(prev_records)
+        prev_df = prev_records if isinstance(prev_records, pd.DataFrame) else pd.DataFrame(prev_records)
         if "Emission" in prev_df.columns:
             prev_total = prev_df["Emission"].sum()
             curr_total = df["Emission"].sum()
