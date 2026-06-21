@@ -1,0 +1,28 @@
+# Secrets — NEVER commit
+.streamlit/secrets.toml
+.env
+*.env
+config/audit_log.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.eggs/
+dist/
+build/
+
+# Venv
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.tmp
