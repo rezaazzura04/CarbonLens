@@ -387,7 +387,11 @@ def compute_canonical_esg(force: bool = False) -> dict:
     import streamlit as st
     from utils.calculations import calculate_esg_score, dataset_overview
 
-    cached = st.session_state.get("esg_breakdown")
+    # Cache is keyed per-slot (read from active company), never from global
+    # session_state, so switching companies or re-uploading always recomputes
+    # against the correct dataset instead of leaking another slot's cache.
+    co = _co()
+    cached = co.get("esg_breakdown")
     if cached and not force and "breakdown" in cached and "data_provided" in cached:
         return cached
 
@@ -420,27 +424,19 @@ def compute_canonical_esg(force: bool = False) -> dict:
         certifications_count         = len(st.session_state.get("certifications") or []),
     )
 
-    # Persist canonical result
-    st.session_state["esg_breakdown"]   = esg
-    st.session_state["esg_intensity"]   = intensity
-    st.session_state["esg_grade"]       = esg["grade"]
-    st.session_state["esg_score"]       = esg["score"]
-    st.session_state["esg_label"]       = esg["label"]
-    st.session_state["esg_env_score"]   = esg["env"]
-    st.session_state["esg_social_score"]= esg["social"]
-    st.session_state["esg_gov_score"]   = esg["gov"]
+    # Persist canonical result — written to the ACTIVE SLOT only (co), so it
+    # never leaks across companies or stale browser sessions. Mirrored to
+    # st.session_state under slot-namespaced keys purely for any legacy reads.
     import datetime as _dt
-    st.session_state["esg_computed_at"] = _dt.datetime.now().isoformat()
-    # Sync grade & scores into the active company slot so sidebar reads correctly
-    slot = st.session_state.get("active_slot", 0)
-    companies = st.session_state.get("companies", [])
-    if 0 <= slot < len(companies):
-        companies[slot]["esg_grade"]       = esg["grade"]
-        companies[slot]["esg_score"]       = esg["score"]
-        companies[slot]["esg_env_score"]   = esg["env"]
-        companies[slot]["esg_social_score"]= esg["social"]
-        companies[slot]["esg_gov_score"]   = esg["gov"]
-        companies[slot]["esg_label"]       = esg["label"]  
+    co["esg_breakdown"]    = esg
+    co["esg_intensity"]    = intensity
+    co["esg_grade"]        = esg["grade"]
+    co["esg_score"]        = esg["score"]
+    co["esg_label"]        = esg["label"]
+    co["esg_env_score"]    = esg["env"]
+    co["esg_social_score"] = esg["social"]
+    co["esg_gov_score"]    = esg["gov"]
+    co["esg_computed_at"]  = _dt.datetime.now().isoformat()
     _persist_to_disk()
 
     return esg

@@ -262,7 +262,7 @@ def render():
     )
 
     # ── Data source ────────────────────────────────────────────────────────
-    uploaded = st.session_state.get("uploaded_df")
+    uploaded = S.get("uploaded_df")
     has_data = uploaded is not None
 
     if not has_data:

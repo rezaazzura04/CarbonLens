@@ -190,7 +190,7 @@ def render():
         badge_type="green",
     )
 
-    has_data = st.session_state.get("uploaded_df") is not None
+    has_data = S.get("uploaded_df") is not None
 
     if not has_data:
         st.markdown("""
@@ -209,7 +209,7 @@ def render():
             st.rerun()
         return
 
-    df        = st.session_state["uploaded_df"]
+    df        = S.get("uploaded_df")
     sector    = S.get("sector", "Manufacturing")
     ov        = dataset_overview(df)
     forecasts = _multi_forecast(df)

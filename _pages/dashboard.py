@@ -29,7 +29,7 @@ def render():
         badge_type="green",
     )
 
-    uploaded = st.session_state.get("uploaded_df")
+    uploaded = S.get("uploaded_df")
     has_data = uploaded is not None
 
     # ── EMPTY STATE ────────────────────────────────────────────────────────
@@ -97,11 +97,32 @@ def render():
     scope3_val   = round(_sc["scope3_kg"] / 1000, 2)
 
     from utils.state import compute_canonical_esg
-    esg         = compute_canonical_esg(force=False)  # dashboard reads cached value, not forced
+    esg         = compute_canonical_esg(force=False)  # cache is invalidated on every upload; safe to read here
     sector      = S.get("sector", "Manufacturing")
     annual_em   = annual_projection(df)
 
     company     = st.session_state.get("company_name", "Your Organization")
+
+    # ── Data freshness indicator — makes it explicit which dataset is live ──
+    computed_at = S.get("esg_computed_at", "")
+    rows_loaded = len(df)
+    if computed_at:
+        from datetime import datetime as _dt
+        try:
+            ts = _dt.fromisoformat(computed_at)
+            ts_label = ts.strftime("%d %b %Y, %H:%M")
+        except Exception:
+            ts_label = "just now"
+        st.markdown(
+            f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;'
+            f'padding:7px 14px;background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;'
+            f'font-size:11px;color:#065F46;width:fit-content;">'
+            f'<span style="width:7px;height:7px;background:#10B981;border-radius:50%;'
+            f'box-shadow:0 0 0 2px rgba(16,185,129,0.2);"></span>'
+            f'<strong>Live data</strong> · {rows_loaded} rows · ESG score recalculated {ts_label}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
     # ── Hero Banner ────────────────────────────────────────────────────────
     hero_banner(
@@ -117,7 +138,7 @@ def render():
 
 
     # ── Year-over-Year comparison ──────────────────────────────────────────
-    prev_df   = st.session_state.get("prev_year_df")
+    prev_df   = S.get("prev_year_df")
     has_prev  = prev_df is not None
     if has_prev:
         from utils.calculations import dataset_overview as _ov

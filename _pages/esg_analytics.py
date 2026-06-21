@@ -369,8 +369,8 @@ def _load_and_validate(uploaded_file):
             """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Store validated data
-    st.session_state["uploaded_df"] = df_raw
+    # Store validated data (single source of truth — per-slot only)
+    S.set("uploaded_df", df_raw)
 
     # Extract company name
     if "Company" in df_raw.columns:
@@ -378,11 +378,7 @@ def _load_and_validate(uploaded_file):
     else:
         name    = uploaded_file.name.replace(".csv", "").replace("_", " ").title()
         company = name if len(name) < 40 else "Uploaded Organization"
-    st.session_state["company_name"] = company
     S.set("company_name", company)
-
-    # Persist to disk
-    S.set("uploaded_df", df_raw)
 
     # Success summary
     col_a, col_b, col_c, col_d = st.columns(4)
@@ -464,7 +460,18 @@ def render():
                 label_visibility="collapsed", key="esg_uploader"
             )
             if uploaded_file:
-                _load_and_validate(uploaded_file)
+                # Visible processing feedback — distinct file triggers fresh analysis
+                file_signature = f"{uploaded_file.name}_{uploaded_file.size}"
+                if st.session_state.get("_last_processed_file") != file_signature:
+                    with st.status("Memproses dataset baru...", expanded=True) as status:
+                        st.write("📄 Membaca file CSV...")
+                        _load_and_validate(uploaded_file)
+                        st.write("✅ Validasi struktur data selesai")
+                        st.write("🔄 Menghitung ulang ESG Score (E+S+G)...")
+                        status.update(label="✅ Dataset baru berhasil dianalisis!",
+                                      state="complete", expanded=False)
+                    st.session_state["_last_processed_file"] = file_signature
+                    st.toast("Data baru berhasil dimuat — semua skor telah diperbarui", icon="✅")
 
             # S+G annual upload
             with st.expander("👥 Upload ESG (Social + Governance) Annual CSV — optional", expanded=False):
@@ -507,7 +514,7 @@ def render():
                     try:
                         prev_df = pd.read_csv(prev_file)
                         if "Emission" in prev_df.columns:
-                            S.set("prev_year_df", prev_df.to_dict("records"))
+                            S.set("prev_year_df", prev_df)
                             st.success(f"✅ Previous year loaded — {len(prev_df)} rows, {prev_df['Emission'].sum():,.0f} tCO₂e total")
                         else:
                             st.error("Previous year CSV must contain 'Emission' column.")

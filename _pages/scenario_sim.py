@@ -371,8 +371,8 @@ def render():
         badge_type="purple",
     )
 
-    has_data = st.session_state.get("uploaded_df") is not None
-    df       = st.session_state["uploaded_df"] if has_data else generate_demo_data()
+    has_data = S.get("uploaded_df") is not None
+    df       = S.get("uploaded_df") if has_data else generate_demo_data()
     ov       = dataset_overview(df)
     total_em = ov.get("total", 0)
 
