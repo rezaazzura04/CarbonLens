@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.streamlit/
+config/users.json
+config/audit_log.jsonl
+config/org_slot_*.json
+config/state_*.json
+assets/.gitkeep
+.DS_Store
+*.egg-info/
+dist/
+build/
+.env

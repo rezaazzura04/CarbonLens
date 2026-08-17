@@ -1,0 +1,16 @@
+"""CarbonLens V8 — Spacing constants (px or CSS value strings)."""
+XS  = "4px"
+SM  = "8px"
+MD  = "16px"
+LG  = "24px"
+XL  = "32px"
+XXL = "48px"
+
+CARD_PADDING    = "14px 16px"
+SECTION_GAP     = "16px"
+PAGE_TOP_MARGIN = "0px"
+
+RADIUS_SM  = "6px"
+RADIUS_MD  = "10px"
+RADIUS_LG  = "16px"
+RADIUS_PILL= "20px"

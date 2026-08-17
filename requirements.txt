@@ -1,0 +1,33 @@
+# CarbonLens V8 — Pinned dependency list
+# Every dependency is annotated with its purpose and the sprint that introduced it.
+# Pin to exact versions for reproducibility.
+
+# ── Core UI framework ─────────────────────────────────────────────────────────
+streamlit==1.35.0          # Web UI framework — the platform runtime
+
+# ── Data processing ───────────────────────────────────────────────────────────
+pandas==2.2.1              # DataFrame operations — upload processing, CSV export
+numpy==1.26.4              # Numerical arrays — outlier detection, calculations
+
+# ── Visualisation ─────────────────────────────────────────────────────────────
+plotly==5.22.0             # Interactive charts — scope breakdown, ESG radar, trends
+
+# ── PDF generation ────────────────────────────────────────────────────────────
+reportlab==4.1.0           # PDF report generation — all PDF export functionality
+
+# ── Excel export ──────────────────────────────────────────────────────────────
+openpyxl==3.1.2            # Excel .xlsx write support — Excel workbook export
+
+# ── GIS and mapping ───────────────────────────────────────────────────────────
+folium==0.16.0             # Interactive maps — GIS Intelligence tab
+streamlit-folium==0.20.0   # Streamlit wrapper for folium maps
+
+# ── Scientific computing ──────────────────────────────────────────────────────
+scipy==1.13.0              # Statistical functions — outlier z-score detection
+
+# ── Development and testing ───────────────────────────────────────────────────
+pytest==8.2.0              # Test framework — unit and integration tests
+pytest-cov==5.0.0          # Test coverage reporting
+
+# ── Optional: Google Earth Engine (GIS Intelligence tab, Phase 5) ────────────
+# earthengine-api==0.1.410 # Google Earth Engine client — uncomment for GIS sprint
