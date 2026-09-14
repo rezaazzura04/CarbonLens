@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+config/audit_log.jsonl
+config/org_slot_*.json
+config/state_*.json
+assets/.gitkeep
+.DS_Store
+*.egg-info/
+dist/
+build/
+.env
+# Note: .streamlit/ is intentionally NOT ignored — config.toml enforces the
+# light-theme brand requirement and must ship with the app.

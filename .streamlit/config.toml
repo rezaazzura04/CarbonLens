@@ -1,0 +1,26 @@
+# CarbonLens — forces a light theme regardless of OS/browser dark-mode
+# preference. Streamlit's native chrome (widget backgrounds, default fonts,
+# toggle controls) otherwise follows the user's system setting, which would
+# silently violate the "no dark UI" brand requirement for anyone with a dark
+# OS theme. This file is the actual enforcement mechanism, not just CSS.
+
+[theme]
+base = "light"
+primaryColor = "#037C38"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7F2"
+textColor = "#17221C"
+# "Inter" is honored as a Google Font name by Streamlit versions that
+# support custom theme fonts; on older versions this value is silently
+# ignored and falls back to "sans serif" rather than erroring, so it's
+# safe to set unconditionally. The CSS injection in components/theme/
+# layout.py is the primary, version-independent enforcement mechanism —
+# this is a defense-in-depth second layer for Streamlit's own native
+# chrome (widget labels, etc.) on versions where it's supported.
+font = "Inter"
+
+[client]
+showErrorDetails = true
+
+[browser]
+gatherUsageStats = false

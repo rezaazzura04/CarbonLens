@@ -1,0 +1,20 @@
+{
+  "_comment": "Regression fixture — Phase 0 canonical computation outputs. Run tests/unit/test_regression.py to validate.",
+  "diesel_ef": 2.6967,
+  "petrol_ef": 2.3254,
+  "lpg_ef": 3.1172,
+  "natural_gas_ef": 2.1692,
+  "coal_ef": 2.7264,
+  "pln_national_ef": 0.716,
+  "esg_weights": {"env": 0.40, "social": 0.30, "gov": 0.30},
+  "confidence_provisional_floor": 50.0,
+  "scope3_covered": 12,
+  "scope3_excluded": ["cat11", "cat14", "cat15"],
+  "score_bands": [
+    {"grade": "A",  "min": 85},
+    {"grade": "B+", "min": 75},
+    {"grade": "B",  "min": 60},
+    {"grade": "C",  "min": 45},
+    {"grade": "D",  "min": 0}
+  ]
+}

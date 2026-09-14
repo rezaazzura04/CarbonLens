@@ -1,0 +1,34 @@
+# CarbonLens — Pinned dependency list
+# Every dependency is annotated with its purpose and the sprint that introduced it.
+# Pin to exact versions for reproducibility.
+
+# ── Core UI framework ─────────────────────────────────────────────────────────
+streamlit==1.35.0          # Web UI framework — the platform runtime
+
+# ── Data processing ───────────────────────────────────────────────────────────
+pandas==2.2.1              # DataFrame operations — upload processing, CSV export
+numpy==1.26.4              # Numerical arrays — outlier detection, calculations
+
+# ── Visualisation ─────────────────────────────────────────────────────────────
+plotly==5.22.0             # Interactive charts — scope breakdown, ESG radar, trends
+
+# ── PDF generation ────────────────────────────────────────────────────────────
+reportlab==4.1.0           # PDF report generation — all PDF export functionality
+
+# ── Excel export ──────────────────────────────────────────────────────────────
+openpyxl==3.1.2            # Excel .xlsx write support — Excel workbook export
+
+# ── Development and testing ───────────────────────────────────────────────────
+pytest==8.2.0              # Test framework — unit and integration tests
+pytest-cov==5.0.0          # Test coverage reporting
+pypdf==5.9.0                # PDF reading — Phase 5-B: verifies PDF export content in tests only
+
+# ── Google Earth Engine (Spatial / Land-Use Context — Phase 5-C, Experimental) ─
+# Genuinely active (not commented out): `import ee` succeeds with this
+# installed. Live queries additionally require Earth Engine credentials
+# (`earthengine authenticate` / a GCP service account) that this repository
+# does not and should not ship — without them, ee.Initialize() raises a
+# clean EEException, which services/gis_service.py catches and falls back to
+# clearly-labeled synthetic data. This closes the previous gap where the
+# dependency wasn't even installed, making the whole code path dormant.
+earthengine-api==0.1.410   # Google Earth Engine client
